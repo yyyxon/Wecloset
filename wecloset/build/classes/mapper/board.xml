@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+	<resultMap id="boardDTO" type="com.wecloset.web.dto.BoardDTO" >
+		<result property="num"  column="num"  />
+		<result property="boardID"  column="boardID" />	
+		<result property="userID"  column="userID" />
+		<result property="userName"  column="userName" />			
+		<result property="boardTitle"  column="boardTitle" />		
+		<result property="boardContent"  column="boardContent" />
+		<result property="boardHit"  column="boardHit" />
+		<result property="boardGroup"  column="boardGroup" />     		
+		<result property="boardName"  column="boardName" />   
+		<result property="fileID"  column="fileID" />
+		<result property="filesystemName"  column="filesystemName" />		
+		<result property="originalFileName"  column="originalFileName" />	
+		<result property="fileDirectory"  column="fileDirectory" />			
+		<result property="extension"  column="extension" />
+		<result property="fileSize"  column="fileSize" />	
+		<result property="likeCount"  column="likeCount" />
+		<result property="likeState"  column="likeState" />
+		<result property="boardSequence"  column="boardSequence" />
+		<result property="boardLevel"  column="boardLevel" />
+		<result property="boardAvailable"  column="boardAvailable" />
+		<result property="commentCount"  column="commentCount" />
+		<result property="attachCount"  column="attachCount" />
+		<result property="boardDate"  column="boardDate" />
+		<result property="boardDateStr"  column="boardDateStr" />
+		<result property="updateDate"  column="updateDate" />		                   	
+	</resultMap>
+	
+	<resultMap id="attachmentsDTO" type="com.wecloset.web.dto.AttachmentsDTO" >
+		<result property="num"  column="num"  />
+		<result property="boardID"  column="boardID" />	
+		<result property="userID"  column="userID" />	
+		<result property="userName"  column="userName" />	
+		<result property="boardGroup"  column="boardGroup" />     		
+		<result property="boardName"  column="boardName" />   
+		<result property="fileID"  column="fileID" />
+		<result property="filesystemName"  column="filesystemName" />		
+		<result property="originalFileName"  column="originalFileName" />	
+		<result property="fileDirectory"  column="fileDirectory" />			
+		<result property="extension"  column="extension" />
+		<result property="fileSize"  column="fileSize" />		
+		<result property="regDate"  column="regDate" />                   	
+	</resultMap>	
+	
+
+	<resultMap id="commentDTO" type="com.wecloset.web.dto.CommentDTO" >
+		<result property="num"  column="num"  />
+		<result property="commentID"  column="commentID" />
+		<result property="boardID"  column="boardID" />	
+		<result property="userID"  column="userID" />	
+		<result property="boardGroup"  column="boardGroup" />
+		<result property="boardName"  column="boardName" />				
+		<result property="commentContent"  column="commentContent" />
+		<result property="userProfile"  column="userProfile" />			
+		<result property="userGender"  column="userGender" />	
+		<result property="regDate"  column="regDate" />
+		<result property="updateDate"  column="updateDate" />		                   	
+	</resultMap>
+
+
+
+	<!-- 게시판  검색 -->
+	<sql id="boardSearch">
+		<if test="searchType !=null and  keyword !=null ">
+	
+
+			<if test="searchType == 'boardTitle'.toString()">
+				AND boardTitle like CONCAT('%', #{keyword}, '%') 
+			</if>
+
+			<if test="searchType == 'boardContent'.toString()">
+				AND boardContent like CONCAT('%', #{keyword}, '%') 
+			</if>
+
+			<if test="searchType == 'all'.toString()">
+				AND (
+
+				boardTitle like CONCAT('%', #{keyword}, '%')
+			
+				OR
+			
+				boardContent like CONCAT('%', #{keyword}, '%')
+			
+				)
+			</if>
+
+		</if>
+		
+		<if test="boardGroup != null and boardGroup.equals('4') ">
+	     AND   R.boardAvailable =1
+	  	</if>
+  			
+	</sql>
+
+	
+
+	
+	
+	<!-- 게시판  목록 출력 -->
+	<select id="getListBoard" resultMap="boardDTO"> 
+		<if test="boardGroup != null and boardGroup == 4 ">
+		SELECT daily.* FROM 
+			(	
+		</if>
+	
+	
+		 <![CDATA[  
+		
+	SELECT R.num,  R.boardGroup , R.boardName, R.boardID, R.userID, u.userName, R.boardTitle , R.boardHit,  left(R.boardDate, 16) as boardDateStr  ,  R.boardAvailable, R.likeCount,
+	
+	(SELECT count(commentID) FROM COMMENT  WHERE boardID=R.boardID  ) commentCount ,
+
+	(SELECT count(fileID) FROM ATTACHMENTS  WHERE boardID=R.boardID  ) attachCount,
+	
+	att.fileID, att.filesystemName, att.originalFileName, att.fileDirectory , att.extension 
+	]]>
+	
+	<if test="userID != null and !userID.equals('') ">
+     , (SELECT count(likeID) FROM BOARD_LIKE  WHERE boardID=R.boardID AND userID=#{userID} 
+     
+        <if test="boardGroup != null and !boardGroup.equals('') ">
+     	AND boardGroup= #{boardGroup} 
+     	</if>
+     	
+     ) likeState
+  	</if>
+ 
+ 	<![CDATA[  	
+	 FROM (
+			 SELECT A.*
+			 
+				 FROM  (
+			
+						SELECT  @rownum:=@rownum+1 as num,  b.* FROM BOARD b
+						
+						, (SELECT @rownum:=0) TMP  WHERE boardID >0	
+	
+	]]>
+ 	
+ 	<include refid="boardSearch"></include>
+ 	
+ 	<if test="boardGroup != null and !boardGroup.equals('') ">						
+						 AND 	 boardGroup =#{boardGroup}	
+	</if>
+	
+	<![CDATA[  					 
+						 ORDER BY boardID asc						 
+						 
+				) A	
+				
+			 ) R 
+			 
+			 LEFT JOIN `USER` u ON  R.userID=u.userID 
+			 
+			 LEFT JOIN	ATTACHMENTS  att on R.boardID=att.boardID 
+ 
+ 											
+		]]>
+		
+
+		ORDER BY R.num DESC
+		
+		<if test="boardGroup != null and boardGroup == 4 ">
+				) daily WHERE daily.filesystemName is not null
+		</if>
+
+		LIMIT #{pageStart}, #{perPageNum}
+	</select>
+
+
+	<!-- 게시판 전체 갯수 -->
+	<select id="boardTotalCount" resultType="int">
+        <choose>
+            <when test="boardGroup != null and boardGroup == 4 ">           		
+				SELECT count(boardID) FROM 
+				( 			
+				
+				SELECT R.boardID, att.filesystemName FROM (
+					SELECT boardID FROM  BOARD  WHERE  boardGroup =4 
+				  ) R
+				  LEFT JOIN	ATTACHMENTS  att on R.boardID=att.boardID 
+				
+				) daily WHERE daily.filesystemName IS NOT NULL  
+            </when>    
+            <otherwise> 
+				 		SELECT count(boardID) FROM  BOARD	WHERE 	 boardID > 0		  
+ 					<if test="boardGroup != null and !boardGroup.equals('') ">
+						AND  boardGroup =#{boardGroup}
+ 					</if>				
+				<include refid="boardSearch"></include>
+            </otherwise>
+            
+        </choose>
+	</select>
+
+  
+
+
+	<!-- 게시판 등록 -->
+	<insert id="insertBoard"   parameterType="com.wecloset.web.dto.BoardDTO" useGeneratedKeys="true" keyProperty="boardID" >	
+	INSERT INTO BOARD
+		
+		(userID, boardTitle, boardContent,  boardGroup, boardName , boardDate , updateDate)
+		
+		VALUES (#{userID}, #{boardTitle}, #{boardContent},  #{boardGroup}, #{boardName} , current_timestamp() ,  current_timestamp())
+	</insert>
+
+	<!-- 첨부 파일 등록  -->
+	<insert id="insertAttachements">	
+	INSERT INTO ATTACHMENTS (boardID, boardGroup, userID, filesystemName, originalFileName, fileDirectory ,  extension , fileSize , regDate)
+	
+	VALUES (#{boardID}, #{boardGroup}, #{userID}, #{filesystemName}, #{originalFileName}, #{fileDirectory}, #{extension} , #{fileSize}, current_timestamp())	
+	</insert>
+
+
+
+	<select id="getBoard" resultMap="boardDTO"> 	
+	SELECT  
+	
+	b.boardID, b.userID, b.boardTitle, b.boardContent, b.boardHit, b.boardGroup, b.boardName, b.boardSequence, b.boardLevel, b.boardAvailable, 
+	
+	left(b.boardDate, 16) as boardDateStr , u.userName, u.userID,
+	
+	(select count(likeID) from BOARD_LIKE  where boardID =#{boardID} ) as likeCount ,
+	
+	<if test="userID != null and !userID.equals('') ">
+     (SELECT count(likeID) FROM BOARD_LIKE  WHERE boardID=b.boardID AND userID=#{userID} AND boardGroup= #{boardGroup} ) likeState ,
+  	</if>
+		 	
+	att.fileID, att.filesystemName, att.originalFileName, att.fileDirectory , att.extension
+		 	
+	FROM BOARD b LEFT JOIN 
+		 	
+		 	ATTACHMENTS  att on b.boardID=att.boardID 
+		 	
+	LEFT JOIN `USER` u ON  b.userID=u.userID  WHERE b.boardID=#{boardID}
+	
+	 	
+	</select>
+
+
+	<select id="getBoardBno" resultMap="boardDTO"> 	
+	SELECT  
+	
+	b.boardID,  b.boardTitle, b.boardContent, b.boardHit, b.boardGroup, b.boardName, b.boardSequence, b.boardLevel, b.boardAvailable, 
+
+  		
+	left(b.boardDate, 16) as boardDateStr , u.userName, u.userID,
+	
+	(select count(likeID) from BOARD_LIKE  where boardID =#{boardID} ) as likeCount ,
+		 	
+	att.fileID, att.filesystemName, att.originalFileName, att.fileDirectory , att.extension
+		 	
+	FROM BOARD b LEFT JOIN 
+		 	
+		 	ATTACHMENTS  att on b.boardID=att.boardID 
+		 	
+	LEFT JOIN `USER` u ON  b.userID=u.userID  WHERE b.boardID=#{boardID}	 	
+	</select>
+
+
+ 	<!-- 게시판 조회수 증가 -->
+	<update id="updateBoardHit">
+		UPDATE BOARD SET boardHit=boardHit+1 WHERE boardID=#{boardID}
+	</update>
+
+
+	<!-- 게시판  숨김 처리 -->
+	<update id="boardUnavailable">
+		UPDATE BOARD SET boardAvailable=0 WHERE boardID=#{boardID}
+	</update>
+
+
+
+	<select id="getAttacheInfo" resultMap="attachmentsDTO"> 	
+		SELECT *  FROM ATTACHMENTS WHERE fileID=#{fileID}
+	</select>
+
+
+	<delete id="getAttacheDelete">
+		DELETE FROM ATTACHMENTS WHERE fileID=#{fileID}
+	</delete>
+
+
+	<update id="updateBoard">	
+		UPDATE BOARD
+			SET 
+			boardTitle=#{boardTitle}, 
+			boardContent=#{boardContent},  	
+			updateDate=current_timestamp()
+		WHERE boardID=#{boardID} AND userID=#{userID}
+	</update>
+
+
+
+
+
+
+	<!-- 댓글  등록 -->
+	<insert id="insertComment"   parameterType="com.wecloset.web.dto.CommentDTO"  >	
+	INSERT INTO COMMENT
+	
+		(boardID, userID, boardGroup, boardName, commentContent, regDate , updateDate)
+	
+	VALUES (#{boardID}, #{userID}, #{boardGroup}, #{boardName}, #{commentContent}, current_timestamp() ,  current_timestamp() )
+	</insert>
+
+
+
+
+	<!-- 댓글 갯수 -->
+	<select id="commentTotalCount" resultType="int">
+		 <![CDATA[ 		
+			 SELECT count(commentID) FROM  COMMENT  WHERE  boardID=#{boardID} AND boardGroup =#{boardGroup}
+	 		]]>
+	</select>
+
+
+
+	<!-- 댓글 목록 -->
+	<select id="getListComment" resultMap="commentDTO">
+		 <![CDATA[  
+	 	 SELECT 
+	 	 
+	 	 	 A.num, A.commentID , A.boardID , A.userID, A.boardGroup, A.boardName, A.commentContent, 
+		 
+		 	date_format(A.regdate, '%Y-%m-%d %h:%i') as regDate ,   left(updateDate, 16) as updateDate  , u.userName , u.userProfile , u.userGender
+		 
+			 FROM  (
+		
+					SELECT  @rownum:=@rownum+1 as num,  tb.* FROM COMMENT tb
+					
+					, (SELECT @rownum:=0) TMP
+										  		
+			
+				 WHERE boardID=#{boardID} AND boardGroup =#{boardGroup}			 
+					 
+				 ORDER BY commentID asc
+					 
+					 
+			) A  LEFT JOIN `USER` u ON  A.userID=u.userID 	
+			
+		WHERE A.commentID >0
+					
+		ORDER BY A.num DESC  LIMIT #{pageStart}, #{perPageNum}				
+	 	]]>
+	</select> 
+
+
+	<!-- 댓글 정보 -->
+	<select id="getComment" resultMap="commentDTO">
+	SELECT * FROM  COMMENT  WHERE  commentID=#{commentID} 		
+	</select>
+
+
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment">
+		DELETE FROM  COMMENT  WHERE  commentID=#{commentID} 		
+	</delete>
+
+	<!-- 댓글 수정 -->
+	<update id="updateComment">		
+	UPDATE COMMENT	SET  commentContent=#{commentContent}, updateDate=current_timestamp() WHERE commentID=#{commentID}
+	</update>
+	
+
+
+
+	<!-- 좋아요 추가 -->
+	<insert id="insertLike">
+		INSERT INTO BOARD_LIKE ( userID, boardID, boardGroup, regDate) VALUES ( #{userID}, #{boardID}, #{boardGroup},  current_timestamp())
+	</insert>
+
+
+
+	<!--  좋아요 삭제 -->
+	<delete id="deleteLike">
+		DELETE FROM BOARD_LIKE WHERE userID=#{userID} AND boardID =#{boardID} AND boardGroup=#{boardGroup}
+	</delete>
+
+
+	<update id="boardLikeCountMinus">
+	 	<![CDATA[  	 
+		UPDATE BOARD SET LIKECOUNT=IF (LIKECOUNT<=0 , '0' , LIKECOUNT-1) WHERE boardID =#{boardID}
+		]]>
+	</update>
+	
+	
+
+
+
+	<update id="boardLikeCountPlus">
+		UPDATE BOARD SET likeCount=likeCount+1 WHERE boardID =#{boardID}
+	</update>
+
+
+	<delete id="boardDelete">	
+	DELETE FROM BOARD WHERE boardID =#{boardID}
+	</delete>
+
+
+
+
+</mapper>
