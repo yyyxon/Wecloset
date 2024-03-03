@@ -6,5 +6,7 @@
 ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![jQuery](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)
-
+![jQuery](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)<br><br>
+<a href="https://yyyxon.notion.site/WE-CLOSET-d8fca9fe4ef9465bb9467070ef7edab7?pvs=4">
+![notion](https://img.shields.io/badge/프로젝트상세-000000?style=for-the-badge&logo=notion&logoColor=white)
+</a>
