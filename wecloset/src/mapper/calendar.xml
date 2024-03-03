@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="calendar">
+
+	<resultMap id="calendarDTO" type="com.wecloset.web.dto.CalendarDTO" >
+		<result property="calendarId"  column="calendarId"  />
+		<result property="title"  column="title" />	
+		<result property="description"  column="description" />
+		<result property="start"  column="start" />			
+		<result property="end"  column="end" />		
+	    <result property="type"  column="type" />			
+		<result property="username"  column="username" />
+		<result property="userID"  column="userID" />
+		<result property="backgroundColor"  column="backgroundColor" />
+		<result property="textColor"  column="textColor" />		
+		<result property="allDay"  column="allDay" />			                   
+	</resultMap>
+
+
+
+	<insert id="insertCalendar" parameterType="com.wecloset.web.dto.CalendarDTO" useGeneratedKeys="true" keyProperty="calendarId" >
+	INSERT INTO CALENDAR
+			
+			( title, description, start, end, type, userID, backgroundColor, textColor, allDay)
+	
+		VALUES (#{title}, #{description}, #{start}, #{end}, #{type}, #{userID}, #{backgroundColor}, #{textColor}, #{allDay})
+	
+	</insert>
+	
+	<update id="updateCalendar">
+	UPDATE CALENDAR
+	
+	SET title=#{title}, description=#{description}, start=#{start}, end=#{end}, type=#{type}, userID=#{userID},
+	
+	 backgroundColor=#{backgroundColor}, textColor=#{textColor}, allDay=#{allDay}
+	
+	WHERE calendarId=#{calendarId}	
+	</update>
+
+
+	<select id="getInfoCalendar" resultMap="calendarDTO"> 		
+		SELECT * FROM CALENDAR WHERE calendarId=#{calendarId}	
+	</select>
+
+	
+	<delete id="deleteCalendar">	
+		DELETE FROM CALENDAR WHERE calendarId=#{calendarId}	 
+	</delete>
+
+
+	<select id="calendarList" resultMap="calendarDTO"> 	
+	<![CDATA[  
+		SELECT calendarId as _id, title, description, start, end,  type,  userID as username , backgroundColor , textColor , allDay
+		
+		  FROM CALENDAR WHERE  start>=#{start} AND end<=#{end}
+	]]>	
+	</select>
+
+	<update id="updateDragCalendar">
+	UPDATE CALENDAR SET start=#{start}, end=#{end} WHERE calendarId=#{calendarId}	
+	</update>
+
+
+	<select id="calendarMonthUser" resultType="user.UserDTO">
+	<![CDATA[ 
+	SELECT  * FROM (
+	
+		SELECT   c.userID,  u.userName FROM CALENDAR c LEFT JOIN `USER` u on c.userID =u.userID WHERE start>=#{start} AND end<=#{end}
+
+ ) R group by R.userID,  R.userName
+
+	]]>	
+	</select>
+
+
+	<select id="calendarWriteUser" resultType="user.UserDTO">
+	<![CDATA[ 
+		SELECT   userID, userName FROM USER
+	]]>	
+	</select>
+
+
+
+
+</mapper>

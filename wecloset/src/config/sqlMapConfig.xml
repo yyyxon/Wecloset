@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<setting name="cacheEnabled" value="false" />
+		<setting name="useGeneratedKeys" value="true" />
+		<setting name="defaultExecutorType" value="REUSE" />
+	</settings>
+ 
+
+ 	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED" >
+				<property name="driver" value="com.mysql.cj.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://localhost:3306/UserChat?serverTimezone=UTC"  />
+				<property name="username" value="UserChat" />
+				<property name="password" value="yeon" />				
+			</dataSource>
+		</environment>
+	</environments>
+
+
+		
+
+	<mappers>						
+			<mapper resource="mapper/board.xml"/>
+			<mapper resource="mapper/calendar.xml"/>
+	</mappers>
+
+
+</configuration>
