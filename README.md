@@ -1,8 +1,9 @@
 <img src="https://github.com/yyyxon/Wecloset/assets/130555434/2436ae2d-e642-4989-aa05-e87e6b49f43b"><br>
 
-### 프로젝트 상세 보러가기
+### ❤ 프로젝트 상세 보러가기
 <a href="https://yyyxon.notion.site/WE-CLOSET-d8fca9fe4ef9465bb9467070ef7edab7?pvs=4">![notion](https://img.shields.io/badge/WECLOSET-000000?style=for-the-badge&logo=notion&logoColor=white)
-</a>
+</a><br>
+(클릭시 노션으로 이동)
 <br>
 ### ✍️ 주제 및 개요
 
