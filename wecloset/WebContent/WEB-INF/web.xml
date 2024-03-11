@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+	<display-name>UserChat</display-name>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+	
+
+	
+	<servlet>
+		<servlet-name>UserRegisterServlet</servlet-name>
+		<servlet-class>user.UserRegisterServlet</servlet-class> <!-- user 패키지 -->
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserRegisterServlet</servlet-name>
+		<url-pattern>/userRegister</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatSubmitServlet</servlet-name>
+		<servlet-class>chat.ChatSubmitServlet</servlet-class> <!-- chat 패키지 -->
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatSubmitServlet</servlet-name>
+		<url-pattern>/chatSubmitServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatListServlet</servlet-name>
+		<servlet-class>chat.ChatListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatListServlet</servlet-name>
+		<url-pattern>/chatListServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>UserLoginServlet</servlet-name>
+		<servlet-class>user.UserLoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserLoginServlet</servlet-name>
+		<url-pattern>/userLogin</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatUnreadServlet</servlet-name>
+		<servlet-class>chat.ChatUnreadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatUnreadServlet</servlet-name>
+		<url-pattern>/chatUnread</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatBoxServlet</servlet-name>
+		<servlet-class>chat.ChatBoxServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatBoxServlet</servlet-name>
+		<url-pattern>/chatBox</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>UserUpdateServlet</servlet-name>
+		<servlet-class>user.UserUpdateServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserUpdateServlet</servlet-name>
+		<url-pattern>/userUpdate</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>UserProfileServlet</servlet-name>
+		<servlet-class>user.UserProfileServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserProfileServlet</servlet-name>
+		<url-pattern>/userProfile</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DailyWriteServlet</servlet-name>
+		<servlet-class>dailylook.DailyWriteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DailyWriteServlet</servlet-name>
+		<url-pattern>/dailyWrite</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DailyDeleteServlet</servlet-name>
+		<servlet-class>dailylook.DailyDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DailyDeleteServlet</servlet-name>
+		<url-pattern>/dailyDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DailyUpdateServlet</servlet-name>
+		<servlet-class>dailylook.DailyUpdateServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DailyUpdateServlet</servlet-name>
+		<url-pattern>/dailyUpdate</url-pattern>
+	</servlet-mapping>
+
+
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/config/application-context.properties</param-value>
+	</context-param>
+
+
+
+	<listener>
+		<listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>log4jServletFilter</filter-name>
+		<filter-class>org.apache.logging.log4j.web.Log4jServletFilter</filter-class>
+	</filter>
+
+	<!-- log4j 서블릿 필터를 적용할 요청 종류를 지정한다. 이 중 ASYNC는 서블릿 3.0 이상에서만 사용 가능하다 -->
+
+	<!-- 원하는 url 맵핑을 해주면 된다. 아래 예제는 모든 URL의 모든 형태의 요청에 대해 Log4j 서블릿 필터를 적용한 
+		것이다. -->
+	<filter-mapping>
+		<filter-name>log4jServletFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>ASYNC</dispatcher>
+	</filter-mapping>
+
+
+	<!-- 생략 가능하다. 별도로 설정하지 않으면 기본 서블릿컨텍스트 이름을 사용한다 -->
+	<context-param>
+		<param-name>log4jContextName</param-name>
+		<param-value>web_system</param-value>
+	</context-param>
+
+	<!-- log4j2의 설정 파일 위치를 지정한다. -->
+	<context-param>
+		<param-name>log4jConfiguration</param-name>
+		<param-value>/WEB-INF/config/log4j2.xml</param-value>
+	</context-param>
+
+
+
+
+
+
+
+
+
+
+
+
+</web-app>
